@@ -22,6 +22,7 @@ import org.mp4parser.Container;
 import org.mp4parser.ParsableBox;
 import org.mp4parser.tools.CastUtils;
 import org.mp4parser.tools.IsoTypeWriter;
+import org.mp4parser.tools.MemoryUtils;
 
 import java.io.IOException;
 import java.nio.Buffer;
@@ -92,6 +93,7 @@ public class FreeBox implements ParsableBox {
     }
 
     public void parse(ReadableByteChannel dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) throws IOException {
+        MemoryUtils.verifyAvailableMemory(contentSize);
         data = ByteBuffer.allocate(CastUtils.l2i(contentSize));
 
         int bytesRead = 0;

@@ -84,39 +84,41 @@ public class RoundTripTest extends TestCase {
 
 
     public void testRoundTrip_1(String originalFile) throws Exception {
+        try {
+            long start1 = System.currentTimeMillis();
+            long start2 = System.currentTimeMillis();
 
-        long start1 = System.currentTimeMillis();
-        long start2 = System.currentTimeMillis();
+            IsoFile isoFile = new IsoFile(new FileInputStream(originalFile).getChannel());
 
-        IsoFile isoFile = new IsoFile(new FileInputStream(originalFile).getChannel());
-
-        long start3 = System.currentTimeMillis();
-
-
-        long start4 = System.currentTimeMillis();
-        Walk.through(isoFile);
-        long start5 = System.currentTimeMillis();
+            long start3 = System.currentTimeMillis();
 
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        isoFile.getBox(Channels.newChannel(baos));
+            long start4 = System.currentTimeMillis();
+            Walk.through(isoFile);
+            long start5 = System.currentTimeMillis();
 
 
-        long start6 = System.currentTimeMillis();
-
-     /*   System.err.println("Preparing tmp copy took: " + (start2 - start1) + "ms");
-        System.err.println("Parsing took           : " + (start3 - start2) + "ms");
-        System.err.println("Writing took           : " + (start6 - start3) + "ms");
-        System.err.println("Walking took           : " + (start5 - start4) + "ms");*/
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            isoFile.getBox(Channels.newChannel(baos));
 
 
-        IsoFile copyViaIsoFileReparsed = new IsoFile(new ByteBufferByteChannel(baos.toByteArray()));
-        BoxComparator.check(isoFile, copyViaIsoFileReparsed, "moov[0]/mvhd[0]", "moov[0]/trak[0]/tkhd[0]", "moov[0]/trak[0]/mdia[0]/mdhd[0]");
-        isoFile.close();
-        copyViaIsoFileReparsed.close();
-        // as windows cannot delete file when something is memory mapped and the garbage collector
-        // doesn't necessarily free the Buffers quickly enough we cannot delete the file here (we could but only for linux)
+            long start6 = System.currentTimeMillis();
 
+         /*   System.err.println("Preparing tmp copy took: " + (start2 - start1) + "ms");
+            System.err.println("Parsing took           : " + (start3 - start2) + "ms");
+            System.err.println("Writing took           : " + (start6 - start3) + "ms");
+            System.err.println("Walking took           : " + (start5 - start4) + "ms");*/
+
+
+            IsoFile copyViaIsoFileReparsed = new IsoFile(new ByteBufferByteChannel(baos.toByteArray()));
+            BoxComparator.check(isoFile, copyViaIsoFileReparsed, "moov[0]/mvhd[0]", "moov[0]/trak[0]/tkhd[0]", "moov[0]/trak[0]/mdia[0]/mdhd[0]");
+            isoFile.close();
+            copyViaIsoFileReparsed.close();
+            // as windows cannot delete file when something is memory mapped and the garbage collector
+            // doesn't necessarily free the Buffers quickly enough we cannot delete the file here (we could but only for linux)
+        } catch (UnsupportedOperationException e) {
+            // We no longer support getBox. Only box parsing.
+        }
 
     }
 
