@@ -19,10 +19,12 @@ package org.mp4parser.support;
 import org.mp4parser.BoxParser;
 import org.mp4parser.IsoFile;
 import org.mp4parser.ParsableBox;
+import org.mp4parser.UnprocessableInputException;
 import org.mp4parser.boxes.UserBox;
 import org.mp4parser.tools.Hex;
 import org.mp4parser.tools.IsoTypeWriter;
 
+import org.mp4parser.tools.MemoryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +96,7 @@ public abstract class AbstractBox implements ParsableBox {
      */
     @DoNotParseDetail
     public void parse(ReadableByteChannel dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) throws IOException {
+        MemoryUtils.verifyAvailableMemory(contentSize);
         content = ByteBuffer.allocate(l2i(contentSize));
 
         while ((content.position() < contentSize)) {
@@ -109,6 +112,7 @@ public abstract class AbstractBox implements ParsableBox {
 
     public void getBox(WritableByteChannel os) throws IOException {
         if (isParsed) {
+            MemoryUtils.verifyAvailableMemory(getSize());
             ByteBuffer bb = ByteBuffer.allocate(l2i(getSize()));
             getHeader(bb);
             getContent(bb);
@@ -126,7 +130,6 @@ public abstract class AbstractBox implements ParsableBox {
             os.write((ByteBuffer) ((Buffer)content).position(0));
         }
     }
-
 
     /**
      * Parses the raw content of the box. It surrounds the actual parsing
@@ -189,7 +192,9 @@ public abstract class AbstractBox implements ParsableBox {
      * @return <code>true</code> if raw content exactly matches the reconstructed content
      */
     private boolean verify(ByteBuffer content) {
-        ByteBuffer bb = ByteBuffer.allocate(l2i(getContentSize() + (deadBytes != null ? deadBytes.limit() : 0)));
+        long contentSize = getContentSize() + (deadBytes != null ? deadBytes.limit() : 0);
+        MemoryUtils.verifyAvailableMemory(contentSize);
+        ByteBuffer bb = ByteBuffer.allocate(l2i(contentSize));
         getContent(bb);
         if (deadBytes != null) {
             ((Buffer)deadBytes).rewind();

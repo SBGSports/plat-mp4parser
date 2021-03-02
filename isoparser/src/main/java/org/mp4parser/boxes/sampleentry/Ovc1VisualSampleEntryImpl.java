@@ -4,6 +4,7 @@ import org.mp4parser.BoxParser;
 import org.mp4parser.tools.CastUtils;
 import org.mp4parser.tools.IsoTypeReader;
 import org.mp4parser.tools.IsoTypeWriter;
+import org.mp4parser.tools.MemoryUtils;
 
 import java.io.IOException;
 import java.nio.Buffer;
@@ -32,6 +33,7 @@ public class Ovc1VisualSampleEntryImpl extends AbstractSampleEntry {
 
     @Override
     public void parse(ReadableByteChannel dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) throws IOException {
+        MemoryUtils.verifyAvailableMemory(contentSize);
         ByteBuffer byteBuffer = ByteBuffer.allocate(CastUtils.l2i(contentSize));
         dataSource.read(byteBuffer);
         ((Buffer)byteBuffer).position(6);

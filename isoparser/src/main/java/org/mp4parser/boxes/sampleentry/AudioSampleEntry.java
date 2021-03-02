@@ -23,6 +23,7 @@ import org.mp4parser.tools.CastUtils;
 import org.mp4parser.tools.IsoTypeReader;
 import org.mp4parser.tools.IsoTypeWriter;
 
+import org.mp4parser.tools.MemoryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -246,6 +247,7 @@ public final class AudioSampleEntry extends AbstractSampleEntry {
             final long remaining = contentSize - 28
                     - (soundVersion == 1 ? 16 : 0)
                     - (soundVersion == 2 ? 36 : 0);
+            MemoryUtils.verifyAvailableMemory(contentSize);
             final ByteBuffer owmaSpecifics = ByteBuffer.allocate(CastUtils.l2i(remaining));
             dataSource.read(owmaSpecifics);
 

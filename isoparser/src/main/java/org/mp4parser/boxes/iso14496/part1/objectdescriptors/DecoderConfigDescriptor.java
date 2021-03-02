@@ -19,6 +19,7 @@ package org.mp4parser.boxes.iso14496.part1.objectdescriptors;
 import org.mp4parser.tools.Hex;
 import org.mp4parser.tools.IsoTypeReader;
 import org.mp4parser.tools.IsoTypeWriter;
+import org.mp4parser.tools.MemoryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,6 +21,7 @@ import org.mp4parser.boxes.sampleentry.AbstractSampleEntry;
 import org.mp4parser.tools.CastUtils;
 import org.mp4parser.tools.IsoTypeReader;
 import org.mp4parser.tools.IsoTypeWriter;
+import org.mp4parser.tools.MemoryUtils;
 
 import java.io.IOException;
 import java.nio.Buffer;
@@ -65,6 +66,7 @@ public class QuicktimeTextSampleEntry extends AbstractSampleEntry {
 
     @Override
     public void parse(ReadableByteChannel dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) throws IOException {
+        MemoryUtils.verifyAvailableMemory(contentSize);
         ByteBuffer content = ByteBuffer.allocate(CastUtils.l2i(contentSize));
         dataSource.read(content);
         ((Buffer)content).position(6);
