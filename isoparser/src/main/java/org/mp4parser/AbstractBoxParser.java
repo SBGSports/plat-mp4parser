@@ -87,7 +87,7 @@ public abstract class AbstractBoxParser implements BoxParser {
             size = IsoTypeReader.readUInt64(header.get());
             contentSize = size - 16;
         } else if (size == 0) {
-            throw new RuntimeException("box size of zero means 'till end of file. That is not yet supported");
+            throw new UnprocessableInputException("box size of zero means 'till end of file. That is not yet supported");
         } else {
             contentSize = size - 8;
         }
